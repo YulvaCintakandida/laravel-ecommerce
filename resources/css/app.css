@@ -1,0 +1,69 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@plugin "daisyui/theme" {
+    name: "dapurabc";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    /* Primary color: #00ab5b (green) */
+    --color-primary: oklch(64.55% 0.16 158.37);
+    --color-primary-content: oklch(98% 0.01 158.37);
+
+    /* Base colors */
+    --color-base-100: oklch(100% 0 0); /* Pure white */
+    --color-base-200: oklch(98% 0.01 240); /* Slight off-white */
+    --color-base-300: oklch(96% 0.02 240); /* Very light gray */
+    --color-base-content: oklch(20% 0.05 240); /* Dark color for text (unchanged) */
+    /* Secondary color - a lighter green shade */
+    --color-secondary: oklch(80% 0.18 160);
+    --color-secondary-content: oklch(20% 0.05 160);
+
+    /* Accent color - a soft orange */
+    --color-accent: oklch(75% 0.20 80);
+    --color-accent-content: oklch(20% 0.05 80);
+
+    /* Neutral color */
+    --color-neutral: oklch(50% 0.05 240);
+    --color-neutral-content: oklch(98% 0.01 240);
+
+    /* Status colors */
+    --color-info: oklch(70% 0.2 220);
+    --color-info-content: oklch(98% 0.01 220);
+    --color-success: oklch(65% 0.16 158.37); /* Based on primary */
+    --color-success-content: oklch(98% 0.01 158.37);
+    --color-warning: oklch(80% 0.25 80);
+    --color-warning-content: oklch(20% 0.05 80);
+    --color-error: oklch(65% 0.3 30);
+    --color-error-content: oklch(98% 0.01 30);
+
+    /* Border radius */
+    --radius-selector: 0.5rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+
+    /* Base sizes */
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+
+    /* Border size */
+    --border: 1px;
+
+    /* Effects */
+    --depth: 1;
+    --noise: 0;
+}
+
+@plugin "daisyui" {
+    themes: false;
+}
