@@ -17,6 +17,9 @@
                 @auth
                     <a href="{{ route('vouchers.customer.index') }}"
                        class="text-black px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('vouchers.customer.index') ? 'underline underline-offset-8 decoration-primary' : '' }}">Vouchers</a>
+                    <a href="{{ route('membership.index') }}"
+                        class="text-black px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('membership.index') ? 'underline underline-offset-8 decoration-primary' : '' }}">
+                        VIP Membership</a>
                 @endauth
             </div>
 

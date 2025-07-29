@@ -66,7 +66,7 @@ class PaymentController extends Controller
         private function createMidtransTransaction(Order $order)
         {
             $items = [];
-
+        
             foreach ($order->items as $item) {
                 $items[] = [
                     'id' => $item->product_id,
@@ -75,7 +75,7 @@ class PaymentController extends Controller
                     'name' => $item->product->name,
                 ];
             }
-
+        
             if ($order->discount_amount > 0) {
                 $items[] = [
                     'id' => 'DISCOUNT',
@@ -84,10 +84,16 @@ class PaymentController extends Controller
                     'name' => 'Discount',
                 ];
             }
-
+        
+            // Buat order_id yang unik dengan menambahkan timestamp
+            $midtransOrderId = $order->id . '-' . time();
+            
+            // Simpan midtrans_order_id di database untuk referensi nanti
+            $order->update(['midtrans_order_id' => $midtransOrderId]);
+        
             $params = [
                 'transaction_details' => [
-                    'order_id' => $order->id,
+                    'order_id' => $midtransOrderId, // Gunakan order_id yang unik
                     'gross_amount' => $order->total,
                 ],
                 'customer_details' => [
@@ -102,7 +108,7 @@ class PaymentController extends Controller
                 ],
                 'notification_url' => route('payment.notification'),
             ];        
-
+        
             // Get the redirect URL from Midtrans
             $response = Snap::createTransaction($params);
             $redirectUrl = $response->redirect_url;
@@ -117,14 +123,16 @@ class PaymentController extends Controller
         {
             try {
                 $notification = new \Midtrans\Notification();
-                
-                $orderId = $notification->order_id;
+        
+                $midtransOrderId = $notification->order_id;
                 $transactionStatus = $notification->transaction_status;
                 
-                $order = Order::findOrFail($orderId);
+                // Cari order berdasarkan midtrans_order_id
+                $order = Order::where('midtrans_order_id', $midtransOrderId)->firstOrFail();
+                
                 
                 // Check real status via Midtrans API
-                $status = Transaction::status($orderId);
+                $status = Transaction::status($midtransOrderId);
                 
                 switch ($status->transaction_status) {
                     case 'settlement':
@@ -160,7 +168,7 @@ public function finish(Order $order)
 {
     try {
         // Check real status from Midtrans
-        $status = Transaction::status($order->id);
+        $status = Transaction::status($order->midtrans_order_id);
         
         switch ($status->transaction_status) {
             case 'settlement':
@@ -209,7 +217,7 @@ public function checkStatus(Order $order)
         // Add server key to config
         Config::$serverKey = config('midtrans.server_key');
         
-        $status = Transaction::status($order->id);
+        $status = Transaction::status($order->midtrans_order_id);
         $order->update(['status' => $status->transaction_status]);
         
         if ($status->transaction_status === 'settlement') {

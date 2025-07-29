@@ -23,7 +23,8 @@ class Order extends Model
         'voucher_id',
         'discount_amount',
         'payment_url',
-        'delivery_method'
+        'delivery_method',
+        'midtrans_order_id'
     ];
 
     const DELIVERY_PICKUP = 'pickup';

@@ -200,7 +200,15 @@
                                     <div class="form-control">
                                         <label class="label cursor-pointer justify-start gap-3">
                                             <input type="radio" name="delivery_method" value="delivery" class="radio radio-primary"/>
-                                            <span class="label-text">Delivery to Address</span>
+                                            <div>
+                                                <span class="label-text">Delivery to Address</span>
+                                                <p class="text-xs text-gray-500 mt-0.5">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    Shipping cost is paid by customer
+                                                </p>
+                                            </div>
                                         </label>
                                     </div>
                                 </div>

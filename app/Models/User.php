@@ -26,6 +26,8 @@ class User extends Authenticatable implements FilamentUser
         'role',
         'phone',
         'address',
+        'membership_type',
+        'membership_expires_at',
     ];
 
     /**
@@ -48,7 +50,42 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'membership_expires_at' => 'datetime',
         ];
+    }
+
+    public function membershipTransactions()
+    {
+        return $this->hasMany(MembershipTransaction::class);
+    }
+
+    public function isVip()
+    {
+        return $this->membership_type === 'vip' && 
+            ($this->membership_expires_at === null || 
+                $this->membership_expires_at->isFuture());
+    }
+
+    public function hasActiveMembership()
+    {
+        return $this->membership_type === 'vip' && 
+            $this->membership_expires_at && 
+            $this->membership_expires_at->isFuture();
+    }
+
+    public function getMembershipStatusAttribute()
+    {
+        if ($this->membership_type === 'regular') {
+            return 'Regular';
+        }
+        
+        if (!$this->membership_expires_at) {
+            return 'Regular';
+        }
+        
+        return $this->membership_expires_at->isFuture() 
+            ? 'VIP (expires: ' . $this->membership_expires_at->format('d M Y') . ')'
+            : 'Expired VIP';
     }
 
     public function orders()

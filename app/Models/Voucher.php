@@ -19,6 +19,8 @@ class Voucher extends Model
         'discount_value',
         'max_usage',
         'current_usage',
+        'is_vip_only', // Tambahkan ini
+        'product_id', // Tambahkan ini
         'start_date',
         'end_date'
     ];
@@ -26,7 +28,8 @@ class Voucher extends Model
     protected $casts = [
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'discount_value' => 'decimal:2'
+        'discount_value' => 'decimal:2',
+        'is_vip_only' => 'boolean', // Tambahkan ini
     ];
 
     protected static function boot()
@@ -57,4 +60,20 @@ class Voucher extends Model
             ->where('is_used', true)
             ->count();
     }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function isValidForProduct($productId)
+{
+    // Jika voucher tidak terikat ke produk spesifik (null), voucher berlaku untuk semua produk
+    if ($this->product_id === null) {
+        return true;
+    }
+    
+    // Jika voucher terikat ke produk spesifik, cek apakah produk_id cocok
+    return $this->product_id === $productId;
+}
 }

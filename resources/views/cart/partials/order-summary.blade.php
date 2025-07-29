@@ -105,10 +105,31 @@
 
                                 <div class="space-y-2 mb-3 max-h-48 overflow-y-auto">
                                     @foreach(Auth::user()->vouchers()->wherePivot('is_used', false)->get() as $voucher)
+                                        
                                         @php
-                                            // Pastikan voucher belum dipakai melebihi max_usage
-                                            $usedCount = $voucher->userVouchers()->where('is_used', true)->count();
-                                        @endphp
+                                        $cartItems = session()->get('cart', []);
+                                        // Gunakan keys dari array cart sebagai product ID
+                                        $cartProductIds = array_map('strval', array_keys($cartItems));
+                                    @endphp
+                                    @php
+                                        // Pastikan voucher belum dipakai melebihi max_usage
+                                        $usedCount = $voucher->userVouchers()->where('is_used', true)->count();
+                                        
+                                        // Check if voucher is valid for products in cart
+                                        $isValidForCart = true;
+                                        $productSpecificNote = '';
+                                        
+                                        if ($voucher->product_id !== null) {
+                                            $voucherProductId = (string) $voucher->product_id;
+                                            $isValidForCart = in_array($voucherProductId, $cartProductIds);
+                                            
+                                            if (!$isValidForCart) {
+                                                $productSpecificNote = 'Only valid for ' . $voucher->product->name;
+                                            } else {
+                                                $productSpecificNote = 'Valid for ' . $voucher->product->name;
+                                            }
+                                        }
+                                    @endphp
 
                                         @if($usedCount < $voucher->max_usage)
                                             <label class="flex items-center gap-2 p-2 border rounded-lg hover:bg-base-200 cursor-pointer">
@@ -120,6 +141,12 @@
                                                             {{ $voucher->discount_value }}% off
                                                         @else
                                                             Rp {{ number_format($voucher->discount_value, 0, ',', '.') }} off
+                                                        @endif
+
+                                                        @if($voucher->product_id !== null)
+                                                            <span class="{{ !$isValidForCart ? 'text-error' : 'text-primary' }} block mt-1">
+                                                                <small>{{ $productSpecificNote }}</small>
+                                                            </span>
                                                         @endif
                                                     </div>
                                                 </div>

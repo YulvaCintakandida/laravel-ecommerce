@@ -14,9 +14,10 @@
             <!-- Product Image Gallery -->
             <div class="space-y-4">
                 <div class="card bg-base-100 shadow-lg border border-base-300 overflow-hidden relative">
-                    <img id="mainImage" src="{{ 'https://placehold.co/600x400' }}"
-                         class="w-full h-96 object-cover object-center"
-                         alt="{{ $product->name }}">
+                <img id="mainImage"
+                    src="{{ $product->image ? Storage::url($product->image) : 'https://placehold.co/600x400' }}"
+                    class="w-full h-96 object-cover object-center"
+                    alt="{{ $product->name }}">
                     @if($product->current_stock <= 0)
                         <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                             <span class="text-white text-lg font-bold">Produk Habis</span>
@@ -31,7 +32,7 @@
                     <h1 class="text-2xl font-bold capitalize">{{ $product->name }}</h1>
                     @if($product->created_at->gt(now()->subDays(7)))
                         <div class="badge badge-secondary badge-soft">New</div>
-                    @endif
+                    @endif 
                 </div>
 
                 <div class="divider !my-0"></div>
@@ -70,32 +71,9 @@
                         <form action="{{ route('cart.add', $product) }}" method="POST"
                               class="flex items-end gap-4">
                             @csrf
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-medium">Quantity</span>
-                                </label>
-                                <div class="join h-12 items-center">
-                                    @if($product->current_stock <= 0)
-                                        <div
-                                            class="text-error font-medium flex items-center justify-center h-full px-4 border border-base-300 rounded-md">
-                                            Out of Stock
-                                        </div>
-                                    @else
-                                        <button type="button" class="btn join-item" onclick="decrementQuantity()">-
-                                        </button>
-                                        <x-input
-                                            type="number"
-                                            name="quantity"
-                                            id="quantity"
-                                            value="1"
-                                            min="1"
-                                            max="{{ $product->current_stock }}"
-                                            class="join-item w-20 text-center"
-                                        />
-                                        <button type="button" class="btn join-item" onclick="incrementQuantity()">+
-                                        </button>
-                                    @endif
-                                </div>
+
+                            <div class="mb-2 text-sm text-gray-600">
+                                Stok tersedia: <span class="font-semibold">{{ $product->current_stock }}</span>
                             </div>
 
                             <x-button-primary
@@ -187,5 +165,11 @@
                 input.value = currentValue - 1;
             }
         }
+
+                document.getElementById('quantity').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
     </script>
 @endsection

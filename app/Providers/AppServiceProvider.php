@@ -8,6 +8,8 @@ use App\Models\OrderItem;
 use App\Observers\OrderItemObserver;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use App\Models\Order;
+use App\Observers\OrderObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,5 +31,6 @@ class AppServiceProvider extends ServiceProvider
         }
         Stock::observe(StockObserver::class);
         OrderItem::observe(OrderItemObserver::class);
+        Order::observe(OrderObserver::class);
     }
 }

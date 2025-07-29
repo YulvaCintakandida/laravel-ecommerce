@@ -48,6 +48,17 @@ class VoucherResource extends Resource
                     ->required()
                     ->numeric()
                     ->minValue(1),
+                Forms\Components\Toggle::make('is_vip_only')
+                    ->label('Khusus Member VIP')
+                    ->helperText('Jika diaktifkan, voucher hanya tersedia untuk member VIP')
+                    ->default(false),
+                    Forms\Components\Select::make('product_id')
+                    ->label('Produk Spesifik (Opsional)')
+                    ->relationship('product', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->placeholder('Berlaku untuk semua produk')
+                    ->helperText('Jika dipilih, voucher hanya berlaku untuk produk ini saja'),    
                 Forms\Components\DateTimePicker::make('start_date')
                     ->label('Tanggal Mulai')
                     ->required(),
@@ -61,6 +72,7 @@ class VoucherResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->defaultSort('created_at', 'desc') // Tambahkan baris ini untuk mengurutkan dari terbaru
             ->columns([
                 Tables\Columns\TextColumn::make('index')
                 ->label('No')
@@ -68,9 +80,6 @@ class VoucherResource extends Resource
                 Tables\Columns\TextColumn::make('code')
                     ->label('Kode Voucher')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('discount_type')
-                    ->label('Tipe Diskon')
-                    ->badge(),
                 Tables\Columns\TextColumn::make('discount_value')
                     ->label('Nilai Diskon')
                     ->formatStateUsing(fn ($state, $record) => 
@@ -81,6 +90,15 @@ class VoucherResource extends Resource
                     ->label('Terpakai')
                     ->formatStateUsing(fn ($state, $record) => 
                         "{$state} / {$record->max_usage}"),
+                        Tables\Columns\IconColumn::make('is_vip_only')
+                        ->label('VIP Only')
+                        ->boolean()
+                        ->trueIcon('heroicon-o-star')
+                        ->falseIcon('heroicon-o-minus-small')
+                        ->trueColor('success'),
+                Tables\Columns\TextColumn::make('product.name')
+                        ->label('Produk Spesifik')
+                        ->placeholder('Semua Produk'),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('Tanggal Mulai')
                     ->dateTime(),
@@ -94,6 +112,9 @@ class VoucherResource extends Resource
                         'percentage' => 'Percentage',
                         'fixed' => 'Fixed Amount',
                     ]),
+                Tables\Filters\Filter::make('is_vip_only')
+                    ->label('VIP Vouchers')
+                    ->query(fn (Builder $query): Builder => $query->where('is_vip_only', true)),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

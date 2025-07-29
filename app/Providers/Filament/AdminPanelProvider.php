@@ -43,6 +43,10 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,
                 \App\Filament\Widgets\TodayIncomeWidget::class,
+                // \App\Filament\Widgets\TopProductsWidget::class,
+                \App\Filament\Widgets\SalesOverviewChart::class,
+                \App\Filament\Widgets\TopProductsChartWidget::class,
+                \App\Filament\Widgets\TopCustomersChartWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

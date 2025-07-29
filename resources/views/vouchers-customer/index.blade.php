@@ -2,6 +2,19 @@
 
 @section('content')
     <div>
+        @if(!$isVip)
+            <div class="alert alert-info mb-6 shadow-lg">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                        <span class="font-bold">Upgrade ke Member VIP</span> untuk mendapatkan akses ke voucher eksklusif!
+                        <a href="{{ route('membership.index') }}" class="btn btn-xs btn-primary ml-2">Lihat Paket</a>
+                    </div>
+                </div>
+            </div>
+        @endif
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold">Available Vouchers</h1>
             <x-button-primary>
@@ -39,6 +52,12 @@
                                 {{ $voucher->discount_type === 'percentage' ? $voucher->discount_value . '%' : 'Rp ' . number_format($voucher->discount_value, 0, ',', '.') }}
                             </div>
                             <div class="text-sm">OFF</div>
+
+                            @if($voucher->is_vip_only)
+                                <div class="absolute top-0 right-0 bg-yellow-400 text-black px-2 py-1 rounded-bl text-xs font-bold transform translate-x-2 -translate-y-2 shadow">
+                                    VIP
+                                </div>
+                            @endif
                         </div>
 
                         <!-- Middle content section -->
@@ -47,9 +66,22 @@
                             <div>
                                 <h2 class="text-xl font-bold">{{ $voucher->code }}</h2>
                                 <p class="text-sm text-gray-500">{{ $voucher->description }}</p>
+                                @if($voucher->is_vip_only)
+                                    <span class="badge badge-warning mt-2">VIP Exclusive</span>
+                                @endif
                             </div>
 
                             <div class="mt-4 space-y-2">
+                                @if($voucher->product_id)
+                                    <div class="text-sm">
+                                        <span class="badge badge-primary gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                            </svg>
+                                            Khusus: {{ $voucher->product->name }}
+                                        </span>
+                                    </div>
+                                @endif
                                 <div class="text-sm">
                                     <span class="text-gray-500">Valid until:</span>
                                     {{ $voucher->end_date->format('d M Y') }}
@@ -106,6 +138,16 @@
                                 </div>
 
                                 <div class="mt-4 space-y-2">
+                                    @if($userVoucher->voucher->product_id)
+                                        <div class="text-sm">
+                                            <span class="badge badge-primary gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                                </svg>
+                                                Khusus: {{ $userVoucher->voucher->product->name }}
+                                            </span>
+                                        </div>
+                                    @endif
                                     <div class="text-sm">
                                         <span class="text-gray-500">Valid until:</span>
                                         {{ $userVoucher->voucher->end_date->format('d M Y') }}

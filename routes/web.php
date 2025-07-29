@@ -14,10 +14,21 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FlavourController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\MembershipController;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // })->name('welcome');
+
+Route::get('/process-queue', function () {
+    // Opsi 1: Proses semua job yang ada di queue saat ini (tidak berjalan terus)
+    Artisan::call('queue:work', ['--stop-when-empty' => true]);
+    
+    // Opsi 2: Proses hanya 1 job
+    // Artisan::call('queue:work', ['--once' => true]);
+    
+    return 'Processed queue jobs';
+}); // Tambahkan middleware admin untuk keamanan
 
 Route::get('/symlink', function () {
     Artisan::call('storage:link');
@@ -35,6 +46,16 @@ Route::get('/flavour/{flavour:slug}', [FlavourController::class, 'show'])->name(
 Auth::routes();
 // Add these routes
 Route::middleware(['auth'])->group(function () {
+
+    Route::prefix('membership')->group(function () {
+        Route::get('/', [MembershipController::class, 'index'])->name('membership.index');
+        Route::get('/checkout/{plan}', [MembershipController::class, 'checkout'])->name('membership.checkout');
+        Route::post('/process/{plan}', [MembershipController::class, 'process'])->name('membership.process');
+        Route::get('/finish/{transaction}', [MembershipController::class, 'finish'])->name('membership.finish');
+        Route::get('/error/{transaction}', [MembershipController::class, 'error'])->name('membership.error');
+        Route::post('/notification', [MembershipController::class, 'notification'])->name('membership.notification');
+        Route::get('/history', [MembershipController::class, 'history'])->name('membership.history');
+    });
     // Cart
     Route::prefix('cart')->group(function () {
         Route::get('/', [CartController::class, 'index'])->name('cart.index');
